@@ -35,7 +35,7 @@ class _EcoTextFieldState extends State<EcoTextField> {
           color: Colors.grey.withOpacity(0.5),
           borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
-        maxLines: widget.maxLines == 1 ? 1 : widget.maxLines,
+        // maxLines: widget.maxLines == 1 ? 1 : widget.maxLines,
         textInputAction: widget.inputAction,
         focusNode: widget.focusNode,
         controller: widget.controller,

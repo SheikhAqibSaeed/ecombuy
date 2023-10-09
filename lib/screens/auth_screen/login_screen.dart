@@ -1,5 +1,5 @@
-import 'package:ecom_buy/screens/home_screen.dart';
-import 'package:ecom_buy/screens/sigup_screen.dart';
+import 'package:ecom_buy/screens/auth_screen/sigup_screen.dart';
+import 'package:ecom_buy/screens/bottom_screens/home_screen.dart';
 import 'package:ecom_buy/services/firebase_servieces.dart';
 import 'package:ecom_buy/utils/styles.dart';
 import 'package:ecom_buy/widgets/button.dart';
@@ -94,66 +94,68 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Welcome \n Please Login First',
-                textAlign: TextAlign.center,
-                style: EcoStyle.boldStyle,
-              ),
-              Column(
-                children: [
-                  Form(
-                    key: formKey,
-                    child: Column(
-                      children: [
-                        EcoTextField(
-                          controller: emailController,
-                          hintText: 'Enter Email!',
-                          validate: (v) {
-                            if (v!.isEmpty) {
-                              return 'Email is required';
-                            }
-                            return null;
-                          },
-                        ),
-                        EcoTextField(
-                          controller: passwordController,
-                          isPassword: true,
-                          hintText: 'Password..',
-                          validate: (v) {
-                            if (v!.isEmpty) {
-                              return 'Password is required';
-                            }
-                            return null;
-                          },
-                        ),
-                        EcoButton(
-                          title: 'Login',
-                          isLoginButton: true,
-                          isLoading: formLoading,
-                          onPress: () {
-                            submit();
-                          },
-                        ),
-                      ],
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Container(
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Welcome \n Please Login First',
+                  textAlign: TextAlign.center,
+                  style: EcoStyle.boldStyle,
+                ),
+                Column(
+                  children: [
+                    Form(
+                      key: formKey,
+                      child: Column(
+                        children: [
+                          EcoTextField(
+                            controller: emailController,
+                            hintText: 'Enter Email!',
+                            validate: (v) {
+                              if (v!.isEmpty) {
+                                return 'Email is required';
+                              }
+                              return null;
+                            },
+                          ),
+                          EcoTextField(
+                            controller: passwordController,
+                            isPassword: true,
+                            hintText: 'Password..',
+                            validate: (v) {
+                              if (v!.isEmpty) {
+                                return 'Password is required';
+                              }
+                              return null;
+                            },
+                          ),
+                          EcoButton(
+                            title: 'Login',
+                            isLoginButton: true,
+                            isLoading: formLoading,
+                            onPress: () {
+                              submit();
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              EcoButton(
-                title: 'Create New Account',
-                isLoginButton: false,
-                onPress: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => SignUpScreen()));
-                },
-              ),
-            ],
+                  ],
+                ),
+                EcoButton(
+                  title: 'Create New Account',
+                  isLoginButton: false,
+                  onPress: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => SignUpScreen()));
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

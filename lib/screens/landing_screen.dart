@@ -1,5 +1,6 @@
-import 'package:ecom_buy/screens/home_screen.dart';
-import 'package:ecom_buy/screens/login_screen.dart';
+import 'package:ecom_buy/screens/auth_screen/login_screen.dart';
+import 'package:ecom_buy/screens/bottom_page.dart';
+import 'package:ecom_buy/screens/bottom_screens/home_screen.dart';
 import 'package:ecom_buy/utils/styles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -34,7 +35,7 @@ class LandingScreen extends StatelessWidget {
                     if (user == null) {
                       return LoginScreen();
                     } else {
-                      return HomeScreen();
+                      return BottomPage();
                     }
                   }
                   return const Scaffold(

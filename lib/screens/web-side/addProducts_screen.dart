@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ecom_buy/models/category_model.dart';
 import 'package:ecom_buy/models/products_model.dart';
-import 'package:ecom_buy/screens/home_screen.dart';
 import 'package:ecom_buy/utils/styles.dart';
 import 'package:ecom_buy/widgets/button.dart';
 import 'package:ecom_buy/widgets/text_field.dart';
@@ -13,9 +13,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
 import 'package:uuid/uuid.dart';
 
+import '../bottom_screens/home_screen.dart';
+
 class AddProductScreen extends StatefulWidget {
-  const AddProductScreen({super.key});
-  static const String id = "addProducts";
+  // const AddProductScreen({Key? key}) : super(key: key);
+  static const String id = "addproduct";
 
   @override
   State<AddProductScreen> createState() => _AddProductScreenState();
@@ -36,236 +38,202 @@ class _AddProductScreenState extends State<AddProductScreen> {
   bool isFavourite = false;
 
   String? selectedValue;
-  final imagePicker = ImagePicker();
-  List<XFile> images = [];
-  List<String> imagesUrls = [];
-  var uuid = Uuid();
   bool isSaving = false;
   bool isUploading = false;
+
+  final imagePicker = ImagePicker();
+  List<XFile> images = [];
+  List<String> imageUrls = [];
+  var uuid = Uuid();
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
         child: Center(
-            child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
-          child: Column(
-            children: [
-              const Text(
-                'Add Products',
-                style: EcoStyle.boldStyle,
-              ),
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 17, vertical: 15),
-                decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(10)),
-                child: DropdownButtonFormField(
-                    hint: const Text('Choose the Category..'),
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.all(10),
-                    ),
-                    validator: (value) {
-                      if (value == null) {
-                        return "Please Select the Category";
-                      }
-                      return null;
-                    },
-                    value: selectedValue,
-                    items: categories
-                        .map((e) =>
-                            DropdownMenuItem<String>(value: e, child: Text(e)))
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue = value.toString();
-                      });
-                    }),
-              ),
-              EcoTextField(
-                controller: productNameC,
-                hintText: "enter product name...",
-                validate: (v) {
-                  if (v!.isEmpty) {
-                    return "should not be empty";
-                  }
-                  return null;
-                },
-              ),
-              EcoTextField(
-                maxLines: 5,
-                controller: detailC,
-                hintText: "enter product detail...",
-                validate: (v) {
-                  if (v!.isEmpty) {
-                    return "should not be empty";
-                  }
-                  return null;
-                },
-              ),
-              EcoTextField(
-                controller: priceC,
-                hintText: "enter product price...",
-                validate: (v) {
-                  if (v!.isEmpty) {
-                    return "should not be empty";
-                  }
-                  return null;
-                },
-              ),
-              EcoTextField(
-                controller: discountPriceC,
-                hintText: "enter product discount Price...",
-                validate: (v) {
-                  if (v!.isEmpty) {
-                    return "should not be empty";
-                  }
-                  return null;
-                },
-              ),
-              EcoTextField(
-                controller: serialCodeC,
-                hintText: "enter product serial code...",
-                validate: (v) {
-                  if (v!.isEmpty) {
-                    return "should not be empty";
-                  }
-                  return null;
-                },
-              ),
-              EcoTextField(
-                controller: brandC,
-                hintText: "enter product brand...",
-                validate: (v) {
-                  if (v!.isEmpty) {
-                    return "should not be empty";
-                  }
-                  return null;
-                },
-              ),
-              EcoButton(
-                title: 'Pick Images',
-                isLoginButton: true,
-                onPress: () {
-                  pickImage();
-                },
-              ),
-              // EcoButton(
-              //   title: 'Upload Images',
-              //   isLoading: isUploading,
-              //   isLoginButton: true,
-              //   onPress: () {
-              //     // postImages(images[0]);
-              //     uploadeImages();
-              //   },
-              // ),
-              Container(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+            child: Column(
+              children: [
+                const Text(
+                  "ADD PRODUCT",
+                  style: EcoStyle.boldStyle,
+                ),
+                Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 17, vertical: 7),
+                  decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: DropdownButtonFormField(
+                      hint: const Text("choose category"),
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.all(10),
+                      ),
+                      validator: (value) {
+                        if (value == null) {
+                          return "category must be selected";
+                        }
+                        return null;
+                      },
+                      value: selectedValue,
+                      items: categories
+                          .map((e) => DropdownMenuItem<String>(
+                              value: e.title, child: Text(e.title!)))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedValue = value.toString();
+                        });
+                      }),
+                ),
+                EcoTextField(
+                  controller: productNameC,
+                  hintText: "enter product name...",
+                  validate: (v) {
+                    if (v!.isEmpty) {
+                      return "should not be empty";
+                    }
+                    return null;
+                  },
+                ),
+                EcoTextField(
+                  maxLines: 5,
+                  controller: detailC,
+                  hintText: "enter product detail...",
+                  validate: (v) {
+                    if (v!.isEmpty) {
+                      return "should not be empty";
+                    }
+                    return null;
+                  },
+                ),
+                EcoTextField(
+                  controller: priceC,
+                  hintText: "enter product price...",
+                  validate: (v) {
+                    if (v!.isEmpty) {
+                      return "should not be empty";
+                    }
+                    return null;
+                  },
+                ),
+                EcoTextField(
+                  controller: discountPriceC,
+                  hintText: "enter product discount Price...",
+                  validate: (v) {
+                    if (v!.isEmpty) {
+                      return "should not be empty";
+                    }
+                    return null;
+                  },
+                ),
+                EcoTextField(
+                  controller: serialCodeC,
+                  hintText: "enter product serial code...",
+                  validate: (v) {
+                    if (v!.isEmpty) {
+                      return "should not be empty";
+                    }
+                    return null;
+                  },
+                ),
+                EcoTextField(
+                  controller: brandC,
+                  hintText: "enter product brand...",
+                  validate: (v) {
+                    if (v!.isEmpty) {
+                      return "should not be empty";
+                    }
+                    return null;
+                  },
+                ),
+                EcoButton(
+                  title: "PICK IMAGES",
+                  onPress: () {
+                    pickImage();
+                  },
+                  isLoginButton: true,
+                ),
+                // EcoButton(
+                //   title: "UPLOAD IMAGES",
+                //   isLoading: isUploading,
+                //   onPress: () {
+                //     uploadImages();
+                //   },
+                //   isLoginButton: true,
+                // ),
+                Container(
                   height: 45.h,
                   decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(20)),
+                    color: Colors.grey.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   child: GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 5),
-                      itemCount: images.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Stack(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black)),
-                                child: Image.network(
-                                  File(images[index].path).path,
-                                  height: 200,
-                                  width: 200,
-                                  fit: BoxFit.cover,
-                                ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 5,
+                    ),
+                    itemCount: images.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Stack(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black)),
+                              child: Image.network(
+                                File(images[index].path).path,
+                                height: 200,
+                                width: 200,
+                                fit: BoxFit.cover,
                               ),
-                              IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      images.removeAt(index);
-                                    });
-                                  },
-                                  icon: Icon(Icons.cancel_outlined))
-                            ],
-                          ),
-                        );
-                      })),
-              SwitchListTile(
-                  title: const Text("Is this Product on Sale?"),
-                  value: isOnSale,
-                  onChanged: (v) {
-                    setState(() {
-                      isOnSale = !isOnSale;
-                    });
-                  }),
-              SwitchListTile(
-                  title: const Text("Is this Product Popular?"),
-                  value: isPopular,
-                  onChanged: (v) {
-                    setState(() {
-                      isPopular = !isPopular;
-                    });
-                  }),
-              EcoButton(
-                title: 'Save',
-                isLoading: isSaving,
-                isLoginButton: true,
-                onPress: () {
-                  save();
-                },
-              )
-            ],
+                            ),
+                            IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    images.removeAt(index);
+                                  });
+                                },
+                                icon: const Icon(Icons.cancel_outlined))
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                SwitchListTile(
+                    title: const Text("Is this Product on Sale?"),
+                    value: isOnSale,
+                    onChanged: (v) {
+                      setState(() {
+                        isOnSale = !isOnSale;
+                      });
+                    }),
+                SwitchListTile(
+                    title: const Text("Is this Product Popular?"),
+                    value: isPopular,
+                    onChanged: (v) {
+                      setState(() {
+                        isPopular = !isPopular;
+                      });
+                    }),
+                EcoButton(
+                  title: "SAVE",
+                  isLoginButton: true,
+                  onPress: () {
+                    save();
+                  },
+                  isLoading: isSaving,
+                ),
+              ],
+            ),
           ),
-        )),
+        ),
       ),
     );
-  }
-
-  pickImage() async {
-    final List<XFile> pickImage = await imagePicker.pickMultiImage();
-    if (pickImage != null) {
-      setState(() {
-        images.addAll(pickImage);
-      });
-    } else {
-      print('Images not selected');
-    }
-  }
-
-  Future postImages(XFile? imageFile) async {
-    setState(() {
-      isUploading = true;
-    });
-    String? urls;
-    Reference ref = FirebaseStorage.instance.ref().child('images').child(
-        imageFile!.name); // this line selecet the path on firebase storage
-    if (kIsWeb) {
-      await ref.putData(
-        await imageFile
-            .readAsBytes(), // this line get the data any type and then read in bytes form only 0 1
-        SettableMetadata(
-            contentType:
-                'image/jpeg'), // its means get the any type data E.g jpg,png,etc.
-      );
-      urls = await ref.getDownloadURL();
-      setState(() {
-        isUploading = false;
-      });
-      return urls;
-    }
-  }
-
-  uploadImages() async {
-    for (var image in images) {
-      await postImages(image)
-          .then((downLoadUrl) => imagesUrls.add(downLoadUrl));
-    }
   }
 
   save() async {
@@ -282,29 +250,27 @@ class _AddProductScreenState extends State<AddProductScreen> {
             price: int.parse(priceC.text),
             discountPrice: int.parse(discountPriceC.text),
             serialCode: serialCodeC.text,
-            imageUrls: imagesUrls,
+            imageUrls: imageUrls,
             isSale: isOnSale,
             isPopular: isPopular,
             isFavourite: isFavourite))
         .whenComplete(() {
       setState(() {
         isSaving = false;
-        imagesUrls.clear();
+        imageUrls.clear();
         images.clear();
         clearFields();
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("ADDED SUCCESSFULLY")));
       });
     });
-
-    // await uploadeImages();
     // await FirebaseFirestore.instance
-    //     .collection('products')
-    //     .add({'images': imagesUrls}).whenComplete(() {
+    //     .collection("products")
+    //     .add({"images": imageUrls}).whenComplete(() {
     //   setState(() {
     //     isSaving = false;
     //     images.clear();
-    //     imagesUrls.clear();
+    //     imageUrls.clear();
     //   });
     // });
   }
@@ -314,5 +280,42 @@ class _AddProductScreenState extends State<AddProductScreen> {
       // selectedValue = "";
       productNameC.clear();
     });
+  }
+
+  pickImage() async {
+    final List<XFile>? pickImage = await imagePicker.pickMultiImage();
+    if (pickImage != null) {
+      setState(() {
+        images.addAll(pickImage);
+      });
+    } else {
+      print("no images selected");
+    }
+  }
+
+  Future postImages(XFile? imageFile) async {
+    setState(() {
+      isUploading = true;
+    });
+    String? urls;
+    Reference ref =
+        FirebaseStorage.instance.ref().child("images").child(imageFile!.name);
+    if (kIsWeb) {
+      await ref.putData(
+        await imageFile.readAsBytes(),
+        SettableMetadata(contentType: "image/jpeg"),
+      );
+      urls = await ref.getDownloadURL();
+      setState(() {
+        isUploading = false;
+      });
+      return urls;
+    }
+  }
+
+  uploadImages() async {
+    for (var image in images) {
+      await postImages(image).then((downLoadUrl) => imageUrls.add(downLoadUrl));
+    }
   }
 }
